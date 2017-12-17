@@ -19,7 +19,7 @@ import java.util.TreeMap;
 public abstract class Sistema {
     private static Map<String, String> users = new TreeMap<>();
     private static Tabela pedidos, produtos, itens;
-    private static Menu   mainMenu, admMenu;
+    private static Menu   mainMenu, admMenu, estoqueMenu;
 
     //Testes de cadastros
     public static void testes() {
@@ -68,12 +68,14 @@ public abstract class Sistema {
 
         //  cria os menus
         mainMenu = new Menu("MENU PRINCIPAL", 
-                new String[]{"INICIAR VENDA", "LISTAR PRODUTOS", "ADMINISTRAR SISTEMA"});
-        admMenu  = new Menu("***ADMINISTRAR SISTEMA***", 
-                new String[]{"CADASTRAR PRODUTO", "ADICIONAR ESTOQUE", "EDITAR ESTOQUE", "VER RENDIMENTO"});
+                new String[]{"LISTAR PRODUTOS E INICIAR VENDA", "ADMINISTRAR ESTOQUE"});
+        admMenu  = new Menu("***ADMINISTRAR ESTOQUE***", 
+                new String[]{"ORGANIZAR ESTOQUE", "VER RENDIMENTO"});
+        estoqueMenu  = new Menu("ORGANIZAR ESTOQUE", 
+                new String[]{"CADASTRAR PRODUTO","ADICIONAR AO ESTOQUE","REMOVER DO ESTOQUE", "EDITAR ESTOQUE"});
 
         //  cria as tabelas
-        produtos = new Tabela("LISTA DE PRODUTOS À VENDA", 
+        produtos = new Tabela("LISTA DE PRODUTOS", 
                 new String[]{"ID", "DESCRIÇÃO", "ESTOQUE", "PREÇO"}, new int[]{11, 38, 9, 13});
         pedidos  = new Tabela("PEDIDOS",  
                 new String[]{"ID", "VALOR LUCRO", "VALOR TOTAL"},  new int[]{8, 13, 13});
@@ -90,9 +92,8 @@ public abstract class Sistema {
         do{
             o = mainMenu.getMenuOption();
             switch (o){
-                //  Iniciar venda
-                case 1: 
-                        try {
+                //  Listar produtos e iniciar venda
+                case 1: try {
                             Actions.newVenda(produtos, pedidos, itens);
                         } catch (EmptyException e) {
                             Msg.showMessage(e.getMessage());
@@ -100,15 +101,8 @@ public abstract class Sistema {
             
                         break;
                     
-                //  Listar produtos à venda
-                case 2: Msg.printTabela(produtos, false);
-                        Msg.showMessage("");
-
-                        break;
-
-                //  Menu Administrador
-                case 3: 
-                        if (Actions.login(users))
+                //  Menu administrar
+                case 2: if (Actions.login(users))
                             admSistema();
                         else
                             Msg.showMessage("ACESSO NEGADO!");
@@ -118,11 +112,11 @@ public abstract class Sistema {
         
     }
 
-    private static void admSistema() {
-        int o2;
+    private static void orgEstoque(){
+        int o;
         do {
-            o2 = admMenu.getMenuOption();
-            switch (o2){
+            o = estoqueMenu.getMenuOption();
+            switch (o){
                 //  CADASTRAR PRODUTO
                 case 1: try {
                             Actions.newProduto(produtos);
@@ -141,7 +135,7 @@ public abstract class Sistema {
                     
                         break;
 
-                //  EDITAR ESTOQUE
+                //  REMOVER ESTOQUE
                 case 3: try {
                             Actions.setEstoqueProduto(produtos, false);
                         } catch (NotFoundException | InvalidException ex) {
@@ -150,14 +144,32 @@ public abstract class Sistema {
                     
                         break;
 
-                //  VER RENDIMENTO
-                case 4: Actions.showRendimento(pedidos);
+                //  EDITAR ESTOQUE
+                case 4: try {
+                            Actions.setEstoqueProduto(produtos);
+                        } catch (NotFoundException | InvalidException ex) {
+                            Msg.showMessage(ex.getMessage());
+                        }
+                    
                         break;
 
-
-                case 5:
             }  
-        } while (o2 != 0);
+        } while (o != 0);
+    }
+    private static void admSistema() {
+        int o;
+        do {
+            o = admMenu.getMenuOption();
+            switch (o){
+                    //  ORGANIZAR ESTOQUE
+                case 1: orgEstoque();
+                        break;
+
+                //  VER RENDIMENTO
+                case 2: Actions.showRendimento(pedidos);
+                        break;
+            }  
+        } while (o != 0);
     
     }
 }

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public abstract class Msg {
     //Retorna a string centralizada
-    private static String toCenter(String s, int width){
+    public static String toCenter(String s, int width){
         int len = (width - s.length())/2;   //espaçamento no início da string
         String format = "%-" + len + "s" + "%-" + (width - len) + "s";
 
@@ -137,13 +137,40 @@ public abstract class Msg {
         printFrame(itens.getColHeaders(), Lines.TOP_CORNER, Lines.MIDDLE_CORNER);   
 
         //  imprime a lista de itens do pedido p
-        
-        if (!printLista(itens.getLista(), p.getId(), itens.COL_SIZES))
-            printItem(toCenter("PEDIDO VAZIO", len));
+        printLista(itens.getLista(), p.getId(), itens.COL_SIZES);
         
         printLine(Lines.BOTTON_CORNER, len);
         
         printTotalFrame(p, len, itens.getTotalColSize());
+    }
+
+    //  Imprime um pedido e seu total no final
+    public static void printPedido(Pedido p, ArrayList<ListItem> itens){
+        //  armazeno a largura da tabela (pra não chamar muitas vezes o método)
+        int len = Pedido.getItens().getTableWidth();    
+        String header = String.format("%-" + len + "s", String.format("PEDIDO: %07d", p.getId()));
+        
+        //  títulos da tabela e das colunas
+        printFrame(header, Lines.TOP_CORNER, Lines.BOTTON_CORNER);      
+        printFrame(Pedido.getItens().getColHeaders(), Lines.TOP_CORNER, Lines.MIDDLE_CORNER);   
+
+        //  imprime a lista parcial de itens do pedido p
+        if (itens.isEmpty())
+            printItem(toCenter("<<PEDIDO VAZIO>>", len));
+        else 
+            printLista(itens, Pedido.getItens().COL_SIZES);
+        
+        printLine(Lines.BOTTON_CORNER, len);
+        
+        //  calcula o total parcial do pedido
+        double total = 0;
+        for (ListItem it: itens) {
+            total += it.getTotal();
+        }
+        
+        String format = "%-" + (len - Pedido.getItens().getTotalColSize()) + "sR$ %" + (Pedido.getItens().getTotalColSize() - 3) + ".2f";
+        printFrame(String.format(format, "TOTAL PARCIAL:", total), Lines.TOP_CORNER, Lines.BOTTON_CORNER);
+        
     }
     
 }

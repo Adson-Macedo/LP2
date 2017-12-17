@@ -33,8 +33,9 @@ public class Actions {
     public static void newVenda(Tabela produtos, Tabela pedidos, Tabela itens) throws EmptyException{
         Scanner s = new Scanner(System.in);
         Pedido pedido = new Pedido();
-        ArrayList<Item> itensPedido = new ArrayList<>(); //  lista de itens a ser associada ao pedido criado
+        ArrayList<ListItem> itensPedido = new ArrayList<>(); //  lista de itens a ser associada ao pedido criado
         
+        Msg.showMessage("INICIANDO VENDA!");
         while(true){
             try{
                 //  mostra a lista de produtos sem total
@@ -43,7 +44,18 @@ public class Actions {
                 int id = s.nextInt();
                 
                 //  Flag para finalizar o pedido
-                if (id == 0) break;
+                if (id == 0) {
+                    Msg.printPedido(pedido, itensPedido);
+                    do{
+                        System.out.println("(0) FINALIZAR   (1)CONTINUAR COMPRANDO");
+                        id = s.nextInt();
+                    }while(id < 0 || id > 1);
+                    
+                    if(id == 0)
+                        break;
+                    else
+                        continue;
+                }
                 
                 //  busca o produto na tabela pelo id
                 Produto p = (Produto) produtos.getItemById(id);
@@ -68,7 +80,7 @@ public class Actions {
         pedidos.insertItem(pedido);
         
         //  insere os itens do pedido na tabela de itens
-        for (Item it: itensPedido) 
+        for (ListItem it: itensPedido) 
             itens.insertItem(it);
         
         //  mostra o pedido criado com seus itens
@@ -96,7 +108,7 @@ public class Actions {
     }
 
     //  Seta ou adiciona estoque ao produto (true-> adiciona; false-> seta)
-    public static void setEstoqueProduto(Tabela produtos, boolean mode) throws NotFoundException, InvalidException{
+    public static void setEstoqueProduto(Tabela produtos) throws NotFoundException, InvalidException{
         Scanner s = new Scanner(System.in);
 
         //  imprime a tabela de produtos sem o total
@@ -106,14 +118,27 @@ public class Actions {
         int id = s.nextInt();
         
         //  se mode = true, então adiciona ao estoque do produto
-        if (mode){
-            System.out.print("QUANTIDADE:   ");
-            ((Produto)produtos.getItemById(id)).addEstoque(s.nextInt());
+        System.out.print("NOVO ESTOQUE: ");
+        ((Produto)produtos.getItemById(id)).setEstoque(s.nextInt());
+    }
+
+    //  Seta ou adiciona estoque ao produto (true-> adiciona; false-> remove)
+    public static void setEstoqueProduto(Tabela produtos, boolean mode) throws NotFoundException, InvalidException{
+        Scanner s = new Scanner(System.in);
+
+        //  imprime a tabela de produtos sem o total
+        Msg.printTabela(produtos, false);
+        System.out.print("DIGITE O ID:  ");
         
-        //  senão, modifica diretamente o estoque do produto
+        int id = s.nextInt();
+        
+        //  se mode = true, então adiciona ao estoque do produto, senão remove
+        System.out.print("QUANTIDADE:   ");
+        int quant = s.nextInt();
+        if (mode){
+            ((Produto)produtos.getItemById(id)).addEstoque(quant);
         }else{
-            System.out.print("NOVO ESTOQUE: ");
-            ((Produto)produtos.getItemById(id)).setEstoque(s.nextInt());
+            ((Produto)produtos.getItemById(id)).decrEstoque(quant);
         }
         
     }

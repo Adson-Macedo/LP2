@@ -21,6 +21,10 @@ public class Pedido implements ListItem, Totais{
         return itens.getTotal(id);
     }
 
+    public static Tabela getItens() {
+        return itens;
+    }
+
     //  Seta a tabela de itens dos pedidos
     public static void setItens(Tabela itens) {
         Pedido.itens = itens;
@@ -53,6 +57,5 @@ public class Pedido implements ListItem, Totais{
         
         return String.format(format, id, getLucro(), getTotal());
     }
-
     
 }
