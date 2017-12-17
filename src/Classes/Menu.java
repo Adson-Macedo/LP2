@@ -1,7 +1,8 @@
 
-package utils;
+package Classes;
 
 import java.util.Scanner;
+import utils.Msg;
 
 public class Menu{
     private String header;
@@ -43,7 +44,7 @@ public class Menu{
         Scanner s = new Scanner(System.in);
         
         do{
-            Msg.printMenu(this);
+            Msg.printMenu(this, "SAIR");
             option = s.nextInt();
         } while(option < 0 || option > menuItens.length);
         

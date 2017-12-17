@@ -22,6 +22,14 @@ public class Item implements ListItem{
         return quant * produto.getPreco();
     }
 
+    public Produto getProduto() {
+        return produto;
+    }
+    
+    public double getCusto(){
+        return produto.getCusto() * quant;
+    }
+
     @Override
     public double getLucro(){
         return produto.getLucro() * quant;

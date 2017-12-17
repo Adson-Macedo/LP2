@@ -39,13 +39,14 @@ public class Actions {
         while(true){
             try{
                 //  mostra a lista de produtos sem total
-                Msg.printTabela(produtos, false);
+                produtos.show(false);
+                
                 System.out.println("ID DO PRODUTO (0 PARA FINALIZAR):");
                 int id = s.nextInt();
                 
                 //  Flag para finalizar o pedido
                 if (id == 0) {
-                    Msg.printPedido(pedido, itensPedido);
+                   pedido.show(itensPedido);
                     do{
                         System.out.println("(0) FINALIZAR   (1)CONTINUAR COMPRANDO");
                         id = s.nextInt();
@@ -84,35 +85,51 @@ public class Actions {
             itens.insertItem(it);
         
         //  mostra o pedido criado com seus itens
-        Msg.printPedido(pedido, itens);
+        pedido.show();
         Msg.showMessage("PEDIDO CRIADO COM SUCESSO!");
     }
     
     //  Mostra a lista de peididos com o total vendido e o rendimento
-    public static void showRendimento(Tabela pedidos){
-        Msg.printTabela(pedidos, true);
-        
-        double lucro = 0;
+    public static void showRendimento(Tabela pedidos, Tabela compras){
+        double totalLucro  = 0;
+        double totalCompra = 0;
+
+        //  soma os custos das compras
+        for (ListItem p: compras.getLista())
+            totalCompra += ((Item) p).getCusto();
+
         //  soma os lucros de todos os pedidos
         for (ListItem p: pedidos.getLista())
-            lucro += p.getLucro();
+            totalLucro += p.getLucro();
         
         //  variáveis auxiliares para impressão do total do rendimento
-        int len = pedidos.getTableWidth();
+        int len = 40;
         int colTotal = pedidos.getTotalColSize();
         String format = "%-" + (len - colTotal) + "sR$ %" + (colTotal - 3)+ ".2f";
-        
+
+        Msg.cls();
         //  imprime o total do rendimento e pausa o programa
-        Msg.printFrame(String.format(format, "RENDIMENTO(LUCRO):", lucro), Lines.TOP_CORNER, Lines.BOTTON_CORNER);
+        Msg.printLine(Lines.TOP_CORNER, len);
+        Msg.printItem(Msg.toCenter("RENDIMENTOS DA EMPRESA", len));
+        Msg.printLine(Lines.MIDDLE_CORNER, len);
+        Msg.printItem(String.format(format, "TOTAL VENDIDO   : ", pedidos.getTotal()));
+        Msg.printItem(String.format(format, "TOTAL (CUSTO)   :" , pedidos.getTotal() - totalLucro));
+        Msg.printItem(String.format(format, "TOTAL DE LUCRO  :" , totalLucro));
+        Msg.printItem(String.format("%-" + (len - colTotal) + "s %" + (colTotal - 2)+ ".2f%%", "% DE LUCRO      :" , pedidos.getTotal() > 0? 100*totalLucro/pedidos.getTotal(): 0));
+        Msg.printLine(Lines.MIDDLE_CORNER, len);
+        Msg.printItem(String.format(format, "GASTO EM COMPRAS:" , totalCompra));
+        Msg.printItem(String.format(format, "SALDO DO CAIXA  :" , pedidos.getTotal() - totalCompra));
+        Msg.printLine(Lines.BOTTON_CORNER, len);
+
         Msg.showMessage("");
     }
 
-    //  Seta ou adiciona estoque ao produto (true-> adiciona; false-> seta)
+    //  Seta o estoque do produto 
     public static void setEstoqueProduto(Tabela produtos) throws NotFoundException, InvalidException{
         Scanner s = new Scanner(System.in);
 
         //  imprime a tabela de produtos sem o total
-        Msg.printTabela(produtos, false);
+        produtos.show(false);
         System.out.print("DIGITE O ID:  ");
         
         int id = s.nextInt();
@@ -120,14 +137,16 @@ public class Actions {
         //  se mode = true, então adiciona ao estoque do produto
         System.out.print("NOVO ESTOQUE: ");
         ((Produto)produtos.getItemById(id)).setEstoque(s.nextInt());
+        
+        Msg.showMessage("ESTOQUE ATUALIZADO COM SUCESSO!");
     }
 
     //  Seta ou adiciona estoque ao produto (true-> adiciona; false-> remove)
-    public static void setEstoqueProduto(Tabela produtos, boolean mode) throws NotFoundException, InvalidException{
+    public static void setEstoqueProduto(Tabela produtos, Tabela compras, boolean mode) throws NotFoundException, InvalidException{
         Scanner s = new Scanner(System.in);
 
         //  imprime a tabela de produtos sem o total
-        Msg.printTabela(produtos, false);
+        produtos.show(false);
         System.out.print("DIGITE O ID:  ");
         
         int id = s.nextInt();
@@ -135,11 +154,15 @@ public class Actions {
         //  se mode = true, então adiciona ao estoque do produto, senão remove
         System.out.print("QUANTIDADE:   ");
         int quant = s.nextInt();
+        Produto p = (Produto) produtos.getItemById(id);
         if (mode){
-            ((Produto)produtos.getItemById(id)).addEstoque(quant);
+            p.addEstoque(quant);
+            compras.insertItem(new Item(p, quant, 0));
         }else{
-            ((Produto)produtos.getItemById(id)).decrEstoque(quant);
+            p.decrEstoque(quant);
         }
+        
+        Msg.showMessage("ESTOQUE ATUALIZADO COM SUCESSO!");
         
     }
     

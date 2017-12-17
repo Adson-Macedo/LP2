@@ -5,6 +5,8 @@
  */
 package utils;
 
+import Classes.SubMenu;
+import Classes.Menu;
 import Classes.*;
 import exceptions.EmptyException;
 import exceptions.InvalidException;
@@ -18,7 +20,7 @@ import java.util.TreeMap;
  */
 public abstract class Sistema {
     private static Map<String, String> users = new TreeMap<>();
-    private static Tabela pedidos, produtos, itens;
+    private static Tabela pedidos, produtos, itens, compras;
     private static Menu   mainMenu, admMenu, estoqueMenu;
 
     //Testes de cadastros
@@ -67,11 +69,11 @@ public abstract class Sistema {
         users.put("Adson", "12345");
 
         //  cria os menus
-        mainMenu = new Menu("MENU PRINCIPAL", 
-                new String[]{"LISTAR PRODUTOS E INICIAR VENDA", "ADMINISTRAR ESTOQUE"});
-        admMenu  = new Menu("***ADMINISTRAR ESTOQUE***", 
-                new String[]{"ORGANIZAR ESTOQUE", "VER RENDIMENTO"});
-        estoqueMenu  = new Menu("ORGANIZAR ESTOQUE", 
+        mainMenu    = new Menu("MENU PRINCIPAL", 
+                new String[]{"LISTAR PRODUTOS",  "INICIAR VENDA", "ADMINISTRAR SISTEMA"});
+        admMenu     = new SubMenu("***ADMINISTRAR SISTEMA***", 
+                new String[]{"ORGANIZAR ESTOQUE", "VER RENDIMENTO", "MOSTRAR PEDIDOS"});
+        estoqueMenu = new SubMenu("***ORGANIZAR ESTOQUE***", 
                 new String[]{"CADASTRAR PRODUTO","ADICIONAR AO ESTOQUE","REMOVER DO ESTOQUE", "EDITAR ESTOQUE"});
 
         //  cria as tabelas
@@ -80,6 +82,8 @@ public abstract class Sistema {
         pedidos  = new Tabela("PEDIDOS",  
                 new String[]{"ID", "VALOR LUCRO", "VALOR TOTAL"},  new int[]{8, 13, 13});
         itens    = new Tabela("ITENS DO PEDIDO",  
+                new String[]{"ID", "DESCRIÇÃO", "QUANT", "PREÇO", "TOTAL"},  new int[]{8, 25, 7, 13, 13});
+        compras  = new Tabela("ITENS COMPRADOS",  
                 new String[]{"ID", "DESCRIÇÃO", "QUANT", "PREÇO", "TOTAL"},  new int[]{8, 25, 7, 13, 13});
 
         Pedido.setItens(itens);
@@ -92,17 +96,26 @@ public abstract class Sistema {
         do{
             o = mainMenu.getMenuOption();
             switch (o){
+                //  Listar produtos
+                case 1: produtos.show(false);
+                        Msg.showMessage("");
+                
+                        break;
+                    
                 //  Listar produtos e iniciar venda
-                case 1: try {
-                            Actions.newVenda(produtos, pedidos, itens);
-                        } catch (EmptyException e) {
-                            Msg.showMessage(e.getMessage());
-                        }
+                case 2: if (produtos.getLista().isEmpty()) {
+                            Msg.showMessage("LISTA DE PRODUTOS ESTÁ VAZIA, CRIE UM PRODUTO PRIMEIRO!");
+                        }else
+                            try {
+                                Actions.newVenda(produtos, pedidos, itens);
+                            } catch (EmptyException e) {
+                                Msg.showMessage(e.getMessage());
+                            }
             
                         break;
                     
                 //  Menu administrar
-                case 2: if (Actions.login(users))
+                case 3: if (Actions.login(users))
                             admSistema();
                         else
                             Msg.showMessage("ACESSO NEGADO!");
@@ -128,7 +141,7 @@ public abstract class Sistema {
 
                 //  ADICIONAR ESTOQUE
                 case 2: try {
-                            Actions.setEstoqueProduto(produtos, true);
+                            Actions.setEstoqueProduto(produtos, compras, true);
                         } catch (NotFoundException | InvalidException ex) {
                             Msg.showMessage(ex.getMessage());
                         }
@@ -137,7 +150,7 @@ public abstract class Sistema {
 
                 //  REMOVER ESTOQUE
                 case 3: try {
-                            Actions.setEstoqueProduto(produtos, false);
+                            Actions.setEstoqueProduto(produtos, null, false);
                         } catch (NotFoundException | InvalidException ex) {
                             Msg.showMessage(ex.getMessage());
                         }
@@ -156,6 +169,7 @@ public abstract class Sistema {
             }  
         } while (o != 0);
     }
+    
     private static void admSistema() {
         int o;
         do {
@@ -166,7 +180,14 @@ public abstract class Sistema {
                         break;
 
                 //  VER RENDIMENTO
-                case 2: Actions.showRendimento(pedidos);
+                case 2: Actions.showRendimento(pedidos, compras);
+
+                        break;
+
+                //  MOSTRAR PEDIDOS
+                case 3: pedidos.show(true);
+                        Msg.showMessage("");
+
                         break;
             }  
         } while (o != 0);

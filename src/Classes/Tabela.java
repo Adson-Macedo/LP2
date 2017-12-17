@@ -6,8 +6,10 @@ package Classes;
 
 import Interfaces.ListItem;
 import Interfaces.Totais;
+import enums.Lines;
 import exceptions.NotFoundException;
 import java.util.ArrayList;
+import utils.Msg;
 
 /**
  *
@@ -101,6 +103,27 @@ public class Tabela implements Totais {
         }
         
         return total;
+    }
+    
+    //  Imprime a tabela
+    public void show(boolean showTotal){
+        Msg.cls();
+
+        //  títulos da tabela e das colunas
+        Msg.printFrame(Msg.toCenter(getHeader(), getTableWidth()), Lines.TOP_CORNER, Lines.MIDDLE_CORNER);   
+        Msg.printFrame(getColHeaders(), null, Lines.MIDDLE_CORNER);                  
+
+        //Lista de itens
+        if (!Msg.printLista(getLista(), COL_SIZES))
+            Msg.printItem(Msg.toCenter("<<LISTA VAZIA>>", getTableWidth()));
+
+        Msg.printLine(Lines.BOTTON_CORNER, getTableWidth());
+        
+        //Imprime um frame com total
+        if (showTotal){
+            Msg.printTotalFrame(this, getTableWidth(), getTotalColSize());
+        }
+
     }
    
 }

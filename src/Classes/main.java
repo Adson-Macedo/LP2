@@ -11,7 +11,7 @@ public class main {
 
     public static void main(String[] args) {
         Sistema.setup();
-        Sistema.testes();
+//        Sistema.testes();
         Sistema.initialize();
     }
 }
