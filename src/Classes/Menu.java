@@ -5,14 +5,16 @@ import java.util.Scanner;
 import utils.Msg;
 
 public class Menu{
-    private String header;
-    private String[] menuItens;
-    private int length;
+    private String header;      //  cabeçalho do menu
+    private String[] menuItens; //  subitens do menu
+    private int width;          //  largura do menu
     
+    //  Construtor
     public Menu(String header, String[] itens){
         this.header = header;
         this.menuItens = itens;
         
+        //  calcula a largura do menu
         int len = header.length();
         
         for (String iten : itens) {
@@ -21,24 +23,24 @@ public class Menu{
             }
         }
         
-        this.length = len;
+        this.width = len;
     }
 
+    //  retorna o cabeçalho centralizado
     public String getHeader() {
-        int space = (length - header.length())/2 + 3;
-        String format = "%-" + space + "s" + "%-" + (length - space + 5) + "s";
-
-        return String.format(format, "", header);
+        return Msg.toCenter(header, width + 5);
     }
 
-    public int getMaxLength() {
-        return length;
+    // retorna a largura do menu
+    public int getWidth() {
+        return width;
     }
 
     public String[] getMenuItens() {
         return menuItens;
     }
     
+    //  Mostra o menu e retorna a opção escolhida
     public int getMenuOption(){
         int option;
         Scanner s = new Scanner(System.in);

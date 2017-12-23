@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 
 public abstract class Msg {
+    //"Limpa" a tela
     public static void cls(){
         for (int i = 0; i < 100; i++) {
             System.out.println("");
@@ -30,11 +31,11 @@ public abstract class Msg {
 
     //Imprime uma linha com cantoneiras
     public static void printLine(Lines tipo, int tam){
-        char c = Lines.LINE.getR();
+        char c = Lines.LINE.getR();         //armazeno em c (para uma execução mais rápida) o caracter de linha
         
         System.out.print(tipo.getL());      //imprime a cantoneira esquerda da linha
         while (tam-- > 0) 
-            System.out.print(c);
+            System.out.print(c);            //imprime a linha
         
         System.out.println(tipo.getR());    //imprime a cantoneira direita da linha
     }
@@ -44,9 +45,9 @@ public abstract class Msg {
         System.out.println(Lines.LINE.getL() + s + Lines.LINE.getL());
     }
     
-    //Imprime uma lista de itens
+    //Se a lista está vazia retorno false, senão, imprime uma lista de itens e retorna true
     public static boolean printLista(ArrayList<ListItem> lista, int [] colSizes){
-        if (lista.isEmpty()) return false;
+        if (lista.isEmpty()) return false;      
 
         for (ListItem li: lista) {
             printItem(li.getItemLine(colSizes));
@@ -55,7 +56,7 @@ public abstract class Msg {
         return true;
     }
 
-    //Imprime uma lista de itens filtrada
+    //Se a lista está vazia retorno false, senão, imprime uma lista de itens filtrada e retorna true
     public static boolean printLista(ArrayList<ListItem> lista, int key, int [] colSizes){
         if (lista.isEmpty()) return false;
         
@@ -67,7 +68,7 @@ public abstract class Msg {
         return true;
     }
     
-    //  Imprime um frame com um texto
+    //  Imprime um frame com uma string
     public static void printFrame(String header, Lines topLine, Lines bottomLine){
         if (topLine != null) 
             printLine(topLine, header.length());
@@ -78,16 +79,18 @@ public abstract class Msg {
             printLine(bottomLine, header.length());
     }
     
-    //  Imprime um bloco com um total de uma tabela ou pedido (que implementa a classe Totais)
+    //  Imprime um bloco com um total de uma tabela ou pedido (classe que implementa a interface Totais)
     public static void printTotalFrame(Totais t, int len, int totalColLen){
+        //  formata a saída
         String s = String.format("%-" + (len - totalColLen) + "sR$ %" + (totalColLen - 3) + ".2f", "TOTAL:", t.getTotal());
+       
         printFrame(s, Lines.TOP_CORNER, Lines.BOTTON_CORNER);
     }
     
     //  Imprime um menu
     public static void printMenu(Menu m, String defaultOption){
         //  formato para cada item do menu de acordo com a maior string do menu
-        String format = "(%d) %-" + (m.getMaxLength()) + "s ";
+        String format = "(%d) %-" + (m.getWidth()) + "s ";
 
         cls();
         //  título do menu

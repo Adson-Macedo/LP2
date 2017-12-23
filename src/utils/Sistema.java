@@ -19,9 +19,9 @@ import java.util.TreeMap;
  * @author Adson Macêdo
  */
 public abstract class Sistema {
-    private static Map<String, String> users = new TreeMap<>();
-    private static Tabela pedidos, produtos, itens, compras;
-    private static Menu   mainMenu, admMenu, estoqueMenu;
+    private static Map<String, String> users = new TreeMap<>();     //  Armazena os usuários e senhas
+    private static Tabela pedidos, produtos, itens, compras;        //  Tabelas de dados
+    private static Menu   mainMenu, admMenu, estoqueMenu;           //  Menus de acesso ao sistema
 
     //Testes de cadastros
     public static void testes() {
@@ -65,6 +65,7 @@ public abstract class Sistema {
     
     // Configurações iniciais do sistema
     public static void setup(){
+        //  usuários do sistema
         users.put("ADMIN", "admin");
         users.put("Adson", "12345");
 
@@ -86,6 +87,7 @@ public abstract class Sistema {
         compras  = new Tabela("ITENS COMPRADOS",  
                 new String[]{"ID", "DESCRIÇÃO", "QUANT", "PREÇO", "TOTAL"},  new int[]{8, 25, 7, 13, 13});
 
+        //  associa a tabela de itens à classe Pedido
         Pedido.setItens(itens);
     }
     
@@ -94,10 +96,10 @@ public abstract class Sistema {
         int o;
         
         do{
-            o = mainMenu.getMenuOption();
+            o = mainMenu.getMenuOption();   // mostra o mainMenu e retorna a opção escolhida
             switch (o){
                 //  Listar produtos
-                case 1: produtos.show(false);
+                case 1: produtos.show(false);   //mostra a tabela produtos sem total no final
                         Msg.showMessage("");
                 
                         break;
@@ -107,7 +109,7 @@ public abstract class Sistema {
                             Msg.showMessage("LISTA DE PRODUTOS ESTÁ VAZIA, CRIE UM PRODUTO PRIMEIRO!");
                         }else
                             try {
-                                Actions.newVenda(produtos, pedidos, itens);
+                                Actions.newVenda(produtos, pedidos, itens); //  inicia uma venda
                             } catch (EmptyException e) {
                                 Msg.showMessage(e.getMessage());
                             }
@@ -116,7 +118,7 @@ public abstract class Sistema {
                     
                 //  Menu administrar
                 case 3: if (Actions.login(users))
-                            admSistema();
+                            admSistema();   
                         else
                             Msg.showMessage("ACESSO NEGADO!");
             }
@@ -128,11 +130,11 @@ public abstract class Sistema {
     private static void orgEstoque(){
         int o;
         do {
-            o = estoqueMenu.getMenuOption();
+            o = estoqueMenu.getMenuOption();    //  mostra o estoqueMenu e retorna a opção escolhida
             switch (o){
                 //  CADASTRAR PRODUTO
                 case 1: try {
-                            Actions.newProduto(produtos);
+                            Actions.newProduto(produtos);   //  cria um novo produto na tabela produtos
                         } catch (InvalidException ex) {
                             Msg.showMessage(ex.getMessage());
                         }
@@ -140,29 +142,41 @@ public abstract class Sistema {
                         break;
 
                 //  ADICIONAR ESTOQUE
-                case 2: try {
-                            Actions.setEstoqueProduto(produtos, compras, true);
-                        } catch (NotFoundException | InvalidException ex) {
-                            Msg.showMessage(ex.getMessage());
-                        }
+                case 2: if (produtos.getLista().isEmpty()) {
+                            Msg.showMessage("LISTA DE PRODUTOS ESTÁ VAZIA, CRIE UM PRODUTO PRIMEIRO!");
+                        }else
+                            try {
+                                //  adiciona o estoque e cria um item em compras com a quantidade acrescentada
+                                Actions.setEstoqueProduto(produtos, compras, true);
+                            } catch (NotFoundException | InvalidException ex) {
+                                Msg.showMessage(ex.getMessage());
+                            }
                     
                         break;
 
                 //  REMOVER ESTOQUE
-                case 3: try {
-                            Actions.setEstoqueProduto(produtos, null, false);
-                        } catch (NotFoundException | InvalidException ex) {
-                            Msg.showMessage(ex.getMessage());
-                        }
+                case 3: if (produtos.getLista().isEmpty()) {
+                            Msg.showMessage("LISTA DE PRODUTOS ESTÁ VAZIA, CRIE UM PRODUTO PRIMEIRO!");
+                        }else
+                            try {
+                                //  remove do estoque
+                                Actions.setEstoqueProduto(produtos, null, false);
+                            } catch (NotFoundException | InvalidException ex) {
+                                Msg.showMessage(ex.getMessage());
+                            }
                     
                         break;
 
                 //  EDITAR ESTOQUE
-                case 4: try {
-                            Actions.setEstoqueProduto(produtos);
-                        } catch (NotFoundException | InvalidException ex) {
-                            Msg.showMessage(ex.getMessage());
-                        }
+                case 4: if (produtos.getLista().isEmpty()) {
+                            Msg.showMessage("LISTA DE PRODUTOS ESTÁ VAZIA, CRIE UM PRODUTO PRIMEIRO!");
+                        }else
+                            try {
+                                //  edita manualmente o estoque do produto
+                                Actions.setEstoqueProduto(produtos);
+                            } catch (NotFoundException | InvalidException ex) {
+                                Msg.showMessage(ex.getMessage());
+                            }
                     
                         break;
 
@@ -180,7 +194,7 @@ public abstract class Sistema {
                         break;
 
                 //  VER RENDIMENTO
-                case 2: Actions.showRendimento(pedidos, compras);
+                case 2: Actions.showRendimento(pedidos, compras, produtos);
 
                         break;
 

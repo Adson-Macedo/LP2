@@ -85,12 +85,12 @@ public class Actions {
             itens.insertItem(it);
         
         //  mostra o pedido criado com seus itens
-        pedido.show();
+//      pedido.show();
         Msg.showMessage("PEDIDO CRIADO COM SUCESSO!");
     }
     
     //  Mostra a lista de peididos com o total vendido e o rendimento
-    public static void showRendimento(Tabela pedidos, Tabela compras){
+    public static void showRendimento(Tabela pedidos, Tabela compras, Tabela produtos){
         double totalLucro  = 0;
         double totalCompra = 0;
 
@@ -117,6 +117,7 @@ public class Actions {
         Msg.printItem(String.format(format, "TOTAL DE LUCRO  :" , totalLucro));
         Msg.printItem(String.format("%-" + (len - colTotal) + "s %" + (colTotal - 2)+ ".2f%%", "% DE LUCRO      :" , pedidos.getTotal() > 0? 100*totalLucro/pedidos.getTotal(): 0));
         Msg.printLine(Lines.MIDDLE_CORNER, len);
+        Msg.printItem(String.format(format, "VALOR EM ESTOQUE:" , produtos.getTotal()));
         Msg.printItem(String.format(format, "GASTO EM COMPRAS:" , totalCompra));
         Msg.printItem(String.format(format, "SALDO DO CAIXA  :" , pedidos.getTotal() - totalCompra));
         Msg.printLine(Lines.BOTTON_CORNER, len);
