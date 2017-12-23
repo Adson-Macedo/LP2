@@ -10,7 +10,8 @@ public enum Lines {
     TOP_CORNER   ('╔', '╗'),    //cantoneiras de topo
     MIDDLE_CORNER('╠', '╣'),    //cantoneiras de meio
     BOTTON_CORNER('╚', '╝'),    //cantoneiras de baixo
-    LINE         ('║', '═');    //caracter de linha e lateral
+//    LINE         ('║', '═');    //caracter (ESPECIAL) de linha e lateral
+    LINE         ('║', '=');    //caracter (SINAL DE IGUAL) de linha e lateral
     
     private final  char l;  
     private final  char r;
